@@ -7,6 +7,6 @@ Project: 7 - Web Crawling
 * Programming language: Python 2.7.12
 
 ## Packages:
-* urllib
-* csv
 * BeautifulSoup
+* csv
+* requests
