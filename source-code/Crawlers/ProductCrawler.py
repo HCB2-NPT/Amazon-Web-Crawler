@@ -19,13 +19,44 @@ class ProductCrawler:
             'Accept-Language': 'en-US,en;q=0.8',
             'Cache-Control': 'no-cache',
             'Connection': 'keep-alive',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.89 Safari/537.36',
-            'Cookie': 'x-wl-uid=1ufpx359OBHL3vTgz/MbR7JgvkGJQRhz3LckdkNugbfHLCGPk7vetOZISd2oWd2WSJfsVdg2IorQ=; aws-session-id=160-6219495-6698944; aws-session-id-time=2102609170l; aws-ubid-main=158-6490660-4063723; s_pers=%20s_vnum%3D1474481169449%2526vn%253D1%7C1474481169449%3B%20s_invisit%3Dtrue%7C1471890969449%3B; session-token="GFYnOfaa8viObgPPKTFbjsjtj/hdS0xHe8XNxHlZ6bDpw/7cg59WOVThx4zcoPrv5qYG69uqL0Excw9ips2zxkJ/BZsdEYRMnlblx4vGeno59jEosFKNgWwelK2xxDUCyus3M8Sk+kb5jnJVHFfeBrN6g1Flud/Dn0YCpygq7J3MZSdA1GGRGS9DsL45rMKGSpXeKVdF0ObGtEfhUMXYlg=="; skin=noskin; session-id-time=2082787201l; session-id=164-0077019-9402407; ubid-main=191-7802258-0837316; csm-hit=6VXTHFXTYA2EXFZ39SK1+ba-BGZYQJSWFFZDKJGKWRY3-EZSZZ8EBJEJKAN8S6XHT|1473689714034'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.89 Safari/537.36'
         }
 
     def parseHMTL(self, url):
         html = requests.get(url, headers = self.headers)
         return html.content
+
+    def checkMetadata(self, metadata):
+        strs = self.keyword.lower()
+        strs = strs.split('+')
+        count = 0
+
+        for str in strs:
+            if str in metadata:
+                count = count + 1
+
+        return count > 1
+
+    def verifyLink(self, link):
+        flag = link.find('h5', {'class': 'a-spacing-none a-color-tertiary s-sponsored-list-header a-text-normal'})
+
+        if flag is None:
+            flag = True
+            metadata = link.find('h2', {'class': 'a-size-medium a-color-null s-inline  s-access-title  a-text-normal'})
+
+            if metadata is None:
+                metadata = link.find('h2', {'class': 'a-size-medium a-color-null s-inline scx-truncate s-access-title  a-text-normal'})
+
+                if metadata is not None:
+                    metadata = metadata['data-attribute']
+                    flag = self.checkMetadata(metadata.lower())
+            else:
+                metadata = metadata['data-attribute']
+                flag = self.checkMetadata(metadata.lower())
+        else:
+            flag = False
+
+        return flag
 
     def crawl(self):
         nextLink = self.url
@@ -41,9 +72,10 @@ class ProductCrawler:
             productLinks = soup.findAll('li', {'class': 's-result-item celwidget'})
 
             for link in productLinks:
-                productID = link['data-asin']
-                crawler = ReviewsCrawler(productID)
-                crawler.getReviews()
+                if self.verifyLink(link):
+                    productID = link['data-asin']
+                    crawler = ReviewsCrawler(productID)
+                    crawler.getReviews()
 
             if nextLink is None:
                 isCrawling = False
