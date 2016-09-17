@@ -1,2 +1,3 @@
+from Helper import Helper
 from ProductCrawler import ProductCrawler
 from ReviewsCrawler import ReviewsCrawler

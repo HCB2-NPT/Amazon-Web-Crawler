@@ -1,30 +1,15 @@
-import requests
 from BeautifulSoup import BeautifulSoup
 from ReviewsCrawler import ReviewsCrawler
+from Helper import Helper
 
 class ProductCrawler:
     url = ''
     keyword = ''
-    headers = {}
 
     def __init__(self, keyword):
         self.keyword = keyword.lower()
         self.keyword = keyword.replace(' ', '+')
         self.url = 'https://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=' + keyword
-        self.setHeader()
-
-    def setHeader(self):
-        self.headers = {
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.8',
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.89 Safari/537.36'
-        }
-
-    def parseHMTL(self, url):
-        html = requests.get(url, headers = self.headers)
-        return html.content
 
     def checkMetadata(self, metadata):
         strs = self.keyword.lower()
@@ -66,7 +51,8 @@ class ProductCrawler:
         while isCrawling:
             print '=== Parsing product - page ' + str(page) + ' ===='
             page = page + 1
-            html = self.parseHMTL(nextLink)
+            html = Helper.parseHMTL(nextLink)
+            print html
             soup = BeautifulSoup(html)
             nextLink = soup.find('a', {'id': 'pagnNextLink'})
             productLinks = soup.findAll('li', {'class': 's-result-item celwidget'})
