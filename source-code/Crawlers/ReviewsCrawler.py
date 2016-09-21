@@ -6,14 +6,14 @@ from Helper import Helper
 class ReviewsCrawler:
 
     def __init__(self, productID):
-        print '--- Crawling Product: ' + productID +' ---'
-        print 'Getting information'
+        print '|\tProduct: ' + productID
         self.outputFile = Helper.createFileName()
         self.url = 'https://www.amazon.com/product-reviews/' + productID + '/?showViewpoints=0&sortBy=byRankDescending'
         html = Helper.parseHTML(self.url)
         self.links = self.getNumberOfLinks(html)
-        print 'Number of Review links: ' + str(self.links)
-        print 'Starting crawling'
+        self.expected = self.getExpectedReviews(html)
+        print '|\t|\tPage(s): ' + str(self.links)
+        print '|\t|\tCrawling'
 
     def getNumberOfLinks(self, html):
         soup = BeautifulSoup(html)
@@ -52,12 +52,21 @@ class ReviewsCrawler:
             ]
             file.writerow(data)
 
+    def getExpectedReviews(self, html):
+        soup = BeautifulSoup(html)
+        total = soup.find('span', {'class': 'a-size-medium totalReviewCount'})
+        return total.text
+
+    def getExpected(self):
+        return self.expected
+
     def getReviews(self):
+        count = 0
         for page in range(1, self.links + 1):
-            print 'Parsing page ' + str(page)
             html = Helper.parseHTML(self.url + '&pageNumber=' + str(page))
             reviews = self.parseReviews(html)
-            print 'Total: ' + str(len(reviews)) + ' reviews'
+            count = count +len(reviews)
+            print '|\t|\t|\tPage ' + str(page) + ' has ' + str(len(reviews)) + ' reviews'
             for review in reviews:
                 self.parseReview(review)
-        print '--- Crawling completed! ---'
+        return count

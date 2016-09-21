@@ -23,21 +23,24 @@ class ProductCrawler:
 
         if flag is None:
             flag = True
-            metadata = link.find('h2', {'class': 'a-size-medium a-color-null s-inline  s-access-title  a-text-normal'})
-
-            if metadata is None:
-                metadata = link.find('h2', {'class': 'a-size-medium a-color-null s-inline scx-truncate s-access-title  a-text-normal'})
-
-                if metadata is not None:
-                    metadata = metadata['data-attribute']
-                    flag = self.checkMetadata(metadata.lower())
-            else:
-                metadata = metadata['data-attribute']
-                flag = self.checkMetadata(metadata.lower())
+            flag = self.checkMetadata(self.getContentLink(link).lower())
         else:
             flag = False
 
         return flag
+
+    def getContentLink(self, link):
+        metadata = link.find('h2', {'class': 'a-size-medium a-color-null s-inline  s-access-title  a-text-normal'})
+
+        if metadata is None:
+            metadata = link.find('h2', {'class': 'a-size-medium a-color-null s-inline scx-truncate s-access-title  a-text-normal'})
+
+            if metadata is not None:
+                metadata = metadata['data-attribute']
+        else:
+            metadata = metadata['data-attribute']
+
+        return metadata
 
     def crawl(self):
         nextLink = self.url
@@ -45,7 +48,7 @@ class ProductCrawler:
         isCrawling = True
 
         while isCrawling:
-            print '=== Parsing product - page ' + str(page) + ' ===='
+            print 'Result page ' + str(page)
             page = page + 1
             html = Helper.parseHTML(nextLink)
             soup = BeautifulSoup(html)
@@ -56,11 +59,19 @@ class ProductCrawler:
                 if self.verifyLink(link):
                     productID = link['data-asin']
                     crawler = ReviewsCrawler(productID)
-                    crawler.getReviews()
+                    actual = crawler.getReviews()
+                    expected = crawler.getExpected()
+                    contentLink = self.getContentLink(link)
+                    Helper.writeLog([
+                        productID,
+                        contentLink,
+                        expected,
+                        actual
+                    ])
 
             if nextLink is None:
                 isCrawling = False
             else:
                 nextLink = 'https://www.amazon.com' + nextLink['href']
 
-        print 'Done!'
+        print '=== Done! ==='

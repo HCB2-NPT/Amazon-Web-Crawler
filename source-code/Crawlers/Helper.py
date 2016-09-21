@@ -4,10 +4,12 @@ import json
 import datetime
 import os
 import sys
+import csv
 
 class Helper:
     headers = None
     fileName = None
+    fileStatistic = None
 
     @staticmethod
     def parseHTML(link):
@@ -50,4 +52,22 @@ class Helper:
                 os.makedirs(directory)
 
             Helper.fileName = directory + '/customer_reviews.csv'
+            Helper.fileStatistic = directory + '/statistic.csv'
+
+            with open(Helper.fileStatistic, 'ab') as fp:
+                file = csv.writer(fp, delimiter = ',',quoting=csv.QUOTE_MINIMAL)
+                data = [
+                    'Product ID',
+                    'Product Name',
+                    'Expected',
+                    'Actual'
+                ]
+                file.writerow(data)
+
         return Helper.fileName
+
+    @staticmethod
+    def writeLog(data):
+        with open(Helper.fileStatistic, 'ab') as fp:
+            file = csv.writer(fp, delimiter = ',',quoting=csv.QUOTE_MINIMAL)
+            file.writerow(data)
