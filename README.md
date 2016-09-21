@@ -10,6 +10,13 @@ Version: 1.3
 ## Dependency packages:
 * requests
 * BeautifulSoup 3
+ 
+## Usage
+```bash
+cd source-code
+# python AmazonCrawler.py -k <keyword>
+python AmazonCrawler.py -k "Sony Speaker Ultra Portable"
+```
 
 ## Config
 
