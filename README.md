@@ -10,7 +10,7 @@ Version: 1.3
 ## Dependency packages:
 * requests
 * BeautifulSoup 3
- 
+
 ## Usage
 ```bash
 cd source-code
