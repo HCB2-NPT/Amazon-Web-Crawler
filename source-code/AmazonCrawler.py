@@ -17,7 +17,8 @@ def main(argv):
             print "15HCB2 Team NPT - Amazon Web Crawler 1.2"
         elif opt in ("-k", "--keyword"):
             keyword = arg
-            crawler = ProductCrawler(keyword)
+            Helper.initialize(keyword)
+            crawler = ProductCrawler()
             crawler.crawl()
 
     sys.exit()

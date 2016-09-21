@@ -3,16 +3,12 @@ from ReviewsCrawler import ReviewsCrawler
 from Helper import Helper
 
 class ProductCrawler:
-    url = ''
-    keyword = ''
 
-    def __init__(self, keyword):
-        self.keyword = keyword.lower()
-        self.keyword = keyword.replace(' ', '+')
-        self.url = 'https://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=' + keyword
+    def __init__(self):
+        self.url = 'https://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=' + Helper.getEncodedKeyword()
 
     def checkMetadata(self, metadata):
-        strs = self.keyword.lower()
+        strs = Helper.getEncodedKeyword()
         strs = strs.split('+')
         count = 0
 
@@ -51,8 +47,7 @@ class ProductCrawler:
         while isCrawling:
             print '=== Parsing product - page ' + str(page) + ' ===='
             page = page + 1
-            html = Helper.parseHMTL(nextLink)
-            print html
+            html = Helper.parseHTML(nextLink)
             soup = BeautifulSoup(html)
             nextLink = soup.find('a', {'id': 'pagnNextLink'})
             productLinks = soup.findAll('li', {'class': 's-result-item celwidget'})

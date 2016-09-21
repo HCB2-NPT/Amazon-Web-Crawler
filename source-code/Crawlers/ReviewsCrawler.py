@@ -4,18 +4,16 @@ from BeautifulSoup import BeautifulSoup
 from Helper import Helper
 
 class ReviewsCrawler:
-    url = ''
-    links = 0
-    outputFile = './' + str(time.time() * 100) + '-amazon-reviews.csv'
 
     def __init__(self, productID):
         print '--- Crawling Product: ' + productID +' ---'
-        print 'Start Contructor'
+        print 'Getting information'
+        self.outputFile = Helper.createFileName()
         self.url = 'https://www.amazon.com/product-reviews/' + productID + '/?showViewpoints=0&sortBy=byRankDescending'
         html = Helper.parseHTML(self.url)
         self.links = self.getNumberOfLinks(html)
-        print 'Number of links: ' + str(self.links)
-        print 'Complete Contructor'
+        print 'Number of Review links: ' + str(self.links)
+        print 'Starting crawling'
 
     def getNumberOfLinks(self, html):
         soup = BeautifulSoup(html)
@@ -24,7 +22,6 @@ class ReviewsCrawler:
 
         if count == 0:
             pagelinks = soup.findAll('div', {'class': 'a-section review'})
-
             if len(pagelinks) > 0:
                 count = 1
         else:
@@ -56,8 +53,6 @@ class ReviewsCrawler:
             file.writerow(data)
 
     def getReviews(self):
-        print 'Total ' + str(self.links) + ' page(s)'
-
         for page in range(1, self.links + 1):
             print 'Parsing page ' + str(page)
             html = Helper.parseHTML(self.url + '&pageNumber=' + str(page))
@@ -65,5 +60,4 @@ class ReviewsCrawler:
             print 'Total: ' + str(len(reviews)) + ' reviews'
             for review in reviews:
                 self.parseReview(review)
-
         print '--- Crawling completed! ---'
