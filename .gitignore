@@ -1,1 +1,3 @@
-source-code/amazon-reviews.csv
+source-code/Results-Crawling/
+source-code/config.conf
+source-code/*/*.pyc
