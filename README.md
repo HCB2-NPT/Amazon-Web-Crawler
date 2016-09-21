@@ -4,7 +4,7 @@ Project: 7 - Web Crawling
 Version: 1.3
 
 ## Environment
-* Development on OS: Ubuntu 16.04 TLS
+* Development on OS: Ubuntu 16.04 LTS
 * Programming language: Python 2.7.12
 
 ## Dependency packages:
